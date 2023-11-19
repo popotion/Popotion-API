@@ -1,21 +1,34 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-15}-alpine
+  db:
+    image: mariadb
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      MARIADB_ROOT_PASSWORD: root
+      MYSQL_DATABASE: projet
+    networks:
+      - myavatar
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - ./database-data:/var/lib/mysql
 
-volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  phpmyadmin:
+    image: phpmyadmin
+    depends_on:
+      - db
+    links:
+      - "db:db"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_PASSWORD: root
+      PMA_USER: root
+    networks:
+      - myavatar
+
+  maildev:
+    image: maildev/maildev
+    command: bin/maildev --web 80 --smtp 25 --hide-extensions STARTTLS
+    networks:
+      - myavatar
+
+networks:
+  myavatar:

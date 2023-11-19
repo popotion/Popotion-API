@@ -1,14 +1,17 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    ports:
-      - "5432"
-###< doctrine/doctrine-bundle ###
 
-###> symfony/mailer ###
-  mailer:
-    image: schickling/mailcatcher
-    ports: ["1025", "1080"]
-###< symfony/mailer ###
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    ports:
+      - "8080:80"
+
+  maildev:
+    ports:
+      - "1080:80"
+      - "25:25"
