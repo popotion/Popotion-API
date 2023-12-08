@@ -17,8 +17,13 @@ class Categorie
     #[ORM\Column]
     private ?int $id = null;
 
+<<<<<<< Updated upstream
     #[ORM\Column(length: 255)]
     private ?string $texte = null;
+=======
+    #[ORM\Column(length: 50)]
+    private ?string $nom = null;
+>>>>>>> Stashed changes
 
     #[ORM\ManyToMany(targetEntity: Recette::class, mappedBy: 'categories')]
     private Collection $recettes;
@@ -33,6 +38,7 @@ class Categorie
         return $this->id;
     }
 
+<<<<<<< Updated upstream
     public function getTexte(): ?string
     {
         return $this->texte;
@@ -41,6 +47,16 @@ class Categorie
     public function setTexte(string $texte): static
     {
         $this->texte = $texte;
+=======
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+>>>>>>> Stashed changes
 
         return $this;
     }

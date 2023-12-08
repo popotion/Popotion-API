@@ -21,6 +21,7 @@ class Utilisateur
     #[ORM\Column(length: 50)]
     private ?string $nom = null;
 
+<<<<<<< Updated upstream
     #[ORM\Column(length: 100)]
     private ?string $password = null;
 
@@ -28,11 +29,24 @@ class Utilisateur
     private ?int $year = null;
 
     #[ORM\Column(length: 100)]
+=======
+    #[ORM\Column(length: 50)]
+    private ?string $password = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $statusProfil = null;
+
+    #[ORM\Column]
+    private ?int $age = null;
+
+    #[ORM\Column(length: 50)]
+>>>>>>> Stashed changes
     private ?string $mail = null;
 
     #[ORM\Column(type: Types::ARRAY)]
     private array $role = [];
 
+<<<<<<< Updated upstream
     #[ORM\OneToMany(mappedBy: 'createur', targetEntity: Recette::class)]
     private Collection $recettes;
 
@@ -47,6 +61,22 @@ class Utilisateur
         $this->recettes = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+=======
+    #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Favoris::class, orphanRemoval: true)]
+    private Collection $favoris;
+
+    #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Commentaire::class, orphanRemoval: true)]
+    private Collection $commentaires;
+
+    #[ORM\OneToMany(mappedBy: 'createur', targetEntity: Recette::class, orphanRemoval: true)]
+    private Collection $recettes;
+
+    public function __construct()
+    {
+        $this->favoris = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        $this->recettes = new ArrayCollection();
+>>>>>>> Stashed changes
     }
 
     public function getId(): ?int
@@ -78,6 +108,7 @@ class Utilisateur
         return $this;
     }
 
+<<<<<<< Updated upstream
     public function getYear(): ?int
     {
         return $this->year;
@@ -86,6 +117,28 @@ class Utilisateur
     public function setYear(int $year): static
     {
         $this->year = $year;
+=======
+    public function getStatusProfil(): ?string
+    {
+        return $this->statusProfil;
+    }
+
+    public function setStatusProfil(string $statusProfil): static
+    {
+        $this->statusProfil = $statusProfil;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(int $age): static
+    {
+        $this->age = $age;
+>>>>>>> Stashed changes
 
         return $this;
     }
@@ -115,6 +168,7 @@ class Utilisateur
     }
 
     /**
+<<<<<<< Updated upstream
      * @return Collection<int, Recette>
      */
     public function getRecettes(): Collection
@@ -127,17 +181,40 @@ class Utilisateur
         if (!$this->recettes->contains($recette)) {
             $this->recettes->add($recette);
             $recette->setCreateur($this);
+=======
+     * @return Collection<int, Favoris>
+     */
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Favoris $favori): static
+    {
+        if (!$this->favoris->contains($favori)) {
+            $this->favoris->add($favori);
+            $favori->setAuteur($this);
+>>>>>>> Stashed changes
         }
 
         return $this;
     }
 
+<<<<<<< Updated upstream
     public function removeRecette(Recette $recette): static
     {
         if ($this->recettes->removeElement($recette)) {
             // set the owning side to null (unless already changed)
             if ($recette->getCreateur() === $this) {
                 $recette->setCreateur(null);
+=======
+    public function removeFavori(Favoris $favori): static
+    {
+        if ($this->favoris->removeElement($favori)) {
+            // set the owning side to null (unless already changed)
+            if ($favori->getAuteur() === $this) {
+                $favori->setAuteur(null);
+>>>>>>> Stashed changes
             }
         }
 
@@ -175,6 +252,7 @@ class Utilisateur
     }
 
     /**
+<<<<<<< Updated upstream
      * @return Collection<int, Favoris>
      */
     public function getFavoris(): Collection
@@ -187,17 +265,40 @@ class Utilisateur
         if (!$this->favoris->contains($favori)) {
             $this->favoris->add($favori);
             $favori->setAuteur($this);
+=======
+     * @return Collection<int, Recette>
+     */
+    public function getRecettes(): Collection
+    {
+        return $this->recettes;
+    }
+
+    public function addRecette(Recette $recette): static
+    {
+        if (!$this->recettes->contains($recette)) {
+            $this->recettes->add($recette);
+            $recette->setCreateur($this);
+>>>>>>> Stashed changes
         }
 
         return $this;
     }
 
+<<<<<<< Updated upstream
     public function removeFavori(Favoris $favori): static
     {
         if ($this->favoris->removeElement($favori)) {
             // set the owning side to null (unless already changed)
             if ($favori->getAuteur() === $this) {
                 $favori->setAuteur(null);
+=======
+    public function removeRecette(Recette $recette): static
+    {
+        if ($this->recettes->removeElement($recette)) {
+            // set the owning side to null (unless already changed)
+            if ($recette->getCreateur() === $this) {
+                $recette->setCreateur(null);
+>>>>>>> Stashed changes
             }
         }
 

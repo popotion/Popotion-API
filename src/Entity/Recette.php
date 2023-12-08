@@ -17,6 +17,7 @@ class Recette
     #[ORM\Column]
     private ?int $id = null;
 
+<<<<<<< Updated upstream
     #[ORM\Column]
     private array $preparation = [];
 
@@ -25,10 +26,21 @@ class Recette
 
     #[ORM\Column(length: 255)]
     private ?string $decription = null;
+=======
+    #[ORM\Column(length: 50)]
+    private ?string $titre = null;
+
+    #[ORM\Column]
+    private array $preparation = [];
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+>>>>>>> Stashed changes
 
     #[ORM\Column]
     private array $detail = [];
 
+<<<<<<< Updated upstream
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'recettes', fetch: 'EAGER')]
     private Collection $categories;
 
@@ -50,6 +62,30 @@ class Recette
         $this->ingredients = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+=======
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Favoris::class, orphanRemoval: true)]
+    private Collection $favoris;
+
+    #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'recettes')]
+    private Collection $categories;
+
+    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'recettes')]
+    private Collection $ingredients;
+
+    #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Commentaire::class, orphanRemoval: true)]
+    private Collection $commentaires;
+
+    #[ORM\ManyToOne(inversedBy: 'recettes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Utilisateur $createur = null;
+
+    public function __construct()
+    {
+        $this->favoris = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->ingredients = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+>>>>>>> Stashed changes
     }
 
     public function getId(): ?int
@@ -57,6 +93,7 @@ class Recette
         return $this->id;
     }
 
+<<<<<<< Updated upstream
     public function getPreparation(): array
     {
         return $this->preparation;
@@ -69,6 +106,8 @@ class Recette
         return $this;
     }
 
+=======
+>>>>>>> Stashed changes
     public function getTitre(): ?string
     {
         return $this->titre;
@@ -81,6 +120,7 @@ class Recette
         return $this;
     }
 
+<<<<<<< Updated upstream
     public function getDecription(): ?string
     {
         return $this->decription;
@@ -89,6 +129,28 @@ class Recette
     public function setDecription(string $decription): static
     {
         $this->decription = $decription;
+=======
+    public function getPreparation(): array
+    {
+        return $this->preparation;
+    }
+
+    public function setPreparation(array $preparation): static
+    {
+        $this->preparation = $preparation;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+>>>>>>> Stashed changes
 
         return $this;
     }
@@ -106,6 +168,39 @@ class Recette
     }
 
     /**
+<<<<<<< Updated upstream
+=======
+     * @return Collection<int, Favoris>
+     */
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Favoris $favori): static
+    {
+        if (!$this->favoris->contains($favori)) {
+            $this->favoris->add($favori);
+            $favori->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavori(Favoris $favori): static
+    {
+        if ($this->favoris->removeElement($favori)) {
+            // set the owning side to null (unless already changed)
+            if ($favori->getRecette() === $this) {
+                $favori->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+>>>>>>> Stashed changes
      * @return Collection<int, Categorie>
      */
     public function getCategories(): Collection
@@ -153,6 +248,7 @@ class Recette
         return $this;
     }
 
+<<<<<<< Updated upstream
     public function getCreateur(): ?Utilisateur
     {
         return $this->createur;
@@ -165,6 +261,8 @@ class Recette
         return $this;
     }
 
+=======
+>>>>>>> Stashed changes
     /**
      * @return Collection<int, Commentaire>
      */
@@ -195,6 +293,7 @@ class Recette
         return $this;
     }
 
+<<<<<<< Updated upstream
     /**
      * @return Collection<int, Favoris>
      */
@@ -221,6 +320,16 @@ class Recette
                 $favori->setRecette(null);
             }
         }
+=======
+    public function getCreateur(): ?Utilisateur
+    {
+        return $this->createur;
+    }
+
+    public function setCreateur(?Utilisateur $createur): static
+    {
+        $this->createur = $createur;
+>>>>>>> Stashed changes
 
         return $this;
     }

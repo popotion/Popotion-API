@@ -19,6 +19,10 @@ class Commentaire
     private ?string $texte = null;
 
     #[ORM\ManyToOne(inversedBy: 'commentaires')]
+<<<<<<< Updated upstream
+=======
+    #[ORM\JoinColumn(nullable: false)]
+>>>>>>> Stashed changes
     private ?Utilisateur $auteur = null;
 
     #[ORM\ManyToOne(inversedBy: 'commentaires')]
