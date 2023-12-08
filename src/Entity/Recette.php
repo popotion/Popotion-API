@@ -29,13 +29,13 @@ class Recette
     #[ORM\Column]
     private array $detail = [];
 
-    #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'recettes')]
+    #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'recettes', fetch: 'EAGER')]
     private Collection $categories;
 
-    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'recettes')]
+    #[ORM\ManyToMany(targetEntity: Ingredient::class, inversedBy: 'recettes', fetch: 'EAGER')]
     private Collection $ingredients;
 
-    #[ORM\ManyToOne(inversedBy: 'recettes')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'recettes')]
     private ?Utilisateur $createur = null;
 
     #[ORM\OneToMany(mappedBy: 'recette', targetEntity: Commentaire::class, orphanRemoval: true)]
