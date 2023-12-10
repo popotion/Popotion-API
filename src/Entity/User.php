@@ -2,43 +2,42 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
-use App\Entity\Recipe;
-use App\Entity\Comment;
-use App\Entity\Favorite;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 55, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $login = null;
 
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column(length: 255)]
-    #[ApiResource(readable: false, writable: false)]
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 128, unique: true)]
-    private ?string $mailAdress = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateOfBirth = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $status = null;
+    #[ORM\Column(length: 255)]
+    private ?string $mailAdress = null;
 
     #[ORM\Column(options: ["default" => false])]
     private ?bool $premium = false;
@@ -76,7 +75,39 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->login;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -84,6 +115,27 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
@@ -105,45 +157,21 @@ class User
         return $this->mailAdress;
     }
 
-    public function setMailAdress(?string $mailAdress): static
+    public function setMailAdress(string $mailAdress): static
     {
         $this->mailAdress = $mailAdress;
 
         return $this;
     }
 
-    public function getPremium(): ?string
+    public function isPremium(): ?bool
     {
         return $this->premium;
     }
 
-    public function setPremium(?string $premium): static
+    public function setPremium(bool $premium): static
     {
         $this->premium = $premium;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
 
         return $this;
     }
