@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\Commentaire;
+use App\Entity\Comment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Commentaire>
+ * @extends ServiceEntityRepository<Comment>
  *
- * @method Commentaire|null find($id, $lockMode = null, $lockVersion = null)
- * @method Commentaire|null findOneBy(array $criteria, array $orderBy = null)
- * @method Commentaire[]    findAll()
- * @method Commentaire[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Comment|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Comment[]    findAll()
+ * @method Comment[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommentaireRepository extends ServiceEntityRepository
+class CommentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Commentaire::class);
+        parent::__construct($registry, Comment::class);
     }
 
 //    /**
-//     * @return Commentaire[] Returns an array of Commentaire objects
+//     * @return Comment[] Returns an array of Comment objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class CommentaireRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Commentaire
+//    public function findOneBySomeField($value): ?Comment
 //    {
 //        return $this->createQueryBuilder('c')
 //            ->andWhere('c.exampleField = :val')

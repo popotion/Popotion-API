@@ -8,9 +8,9 @@
             "ref": "696d44adc3c0d4f5d25a2f1c4f3700dd8a5c6db9"
         },
         "files": [
-            "./config/packages/api_platform.yaml",
-            "./config/routes/api_platform.yaml",
-            "./src/ApiResource/.gitignore"
+            "config/packages/api_platform.yaml",
+            "config/routes/api_platform.yaml",
+            "src/ApiResource/.gitignore"
         ]
     },
     "doctrine/doctrine-bundle": {
@@ -49,7 +49,7 @@
             "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
         },
         "files": [
-            "./config/packages/nelmio_cors.yaml"
+            "config/packages/nelmio_cors.yaml"
         ]
     },
     "phpunit/phpunit": {
