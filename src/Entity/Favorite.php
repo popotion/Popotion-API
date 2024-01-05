@@ -3,11 +3,39 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\FavoriteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Delete(),
+        new Post(),
+        // Tous les Favoris d'un Utilisateur) //
+        new GetCollection(
+            uriTemplate: '/user/{id}/favoris',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'comments',
+                    fromClass: User::class,
+                )
+            ]),
+        // Tous les Favoris d'une Recette) //
+        new GetCollection(
+            uriTemplate: '/recipe/{id}/favoris',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'comments',
+                    fromClass: Recipe::class,
+                )
+            ]),
+    ],
+)]
 class Favorite
 {
     #[ORM\Id]

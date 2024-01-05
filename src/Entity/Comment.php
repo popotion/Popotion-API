@@ -3,12 +3,42 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Delete(),
+        new Post(),
+        new Patch(),
+        // Tous les commentaires d'un Utilisateur //
+        new GetCollection(
+            uriTemplate: '/user/{id}/comments',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'comments',
+                    fromClass: User::class,
+                )
+            ]),
+        // Tous les commentaires lié à une Recette //
+        new GetCollection(
+            uriTemplate: '/recipe/{id}/comments',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'comments',
+                    fromClass: Recipe::class,
+                )
+            ])
+        ]
+)]
 class Comment
 {
     #[ORM\Id]
