@@ -16,11 +16,11 @@ class UserProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
     {
-        $this->chiffrerMotDePasse($data, $data->getPlainPassword());
+        $this->encryptPassword($data, $data->getPlainPassword());
         $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
 
-    public function chiffrerMotDePasse(User $user, ?string $plainPassword): void
+    public function encryptPassword(User $user, ?string $plainPassword): void
     {
         if ($plainPassword == null) return;
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
