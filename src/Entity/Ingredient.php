@@ -3,13 +3,35 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\IngredientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Patch(),
+        new Delete(),
+        new Post(),
+        new GetCollection(),
+        // Toutes les Ingrédients d'une Recette) //
+        new GetCollection(
+            uriTemplate: '/recipe/{id}/ingredients',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'ingredients',
+                    toProperty: 'recipes',
+                    fromClass: Recipe::class,
+                    toClass: Ingredient::class)
+            ])]
+)]
 class Ingredient
 {
     #[ORM\Id]

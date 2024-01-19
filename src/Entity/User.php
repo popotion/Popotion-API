@@ -54,6 +54,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['login'], message: 'Ce login est déjà utilisé.')]
 #[UniqueEntity(fields: ['mailAdress'], message: 'Cette adresse mail est déjà utilisée.')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[Groups(['user:read'])]

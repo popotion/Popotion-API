@@ -3,16 +3,55 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\RecipeRepository;
-use App\Entity\Category;
-use App\Entity\Favorite;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Patch(),
+        new Delete(),
+        new Post(),
+        new GetCollection(),
+        // Toutes les Recettes d'un Utilisateur) //
+        new GetCollection(
+            uriTemplate: '/user/{id}/recipe',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'recipes',
+                    fromClass: User::class,
+                )
+            ]),
+        // Toutes les Recettes contenues dans une Catégorie) //
+        new GetCollection(
+            uriTemplate: '/categories/{id}/recipes',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'recipes',
+                    fromClass: Category::class,
+                )
+            ]),
+        // Toutes les Recettes ou sont contenues un Ingrédient) //
+        new GetCollection(
+            uriTemplate: '/ingredients/{id}/recipes',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'recipes',
+                    toProperty: 'ingredients',
+                    fromClass: Ingredient::class,
+                    toClass: Recipe::class)
+            ])]
+)]
 class Recipe
 {
     #[ORM\Id]
