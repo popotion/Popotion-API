@@ -21,16 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(),
         new Post(),
         new GetCollection(),
-        // Toutes les Ingrédients d'une Recette) //
-        new GetCollection(
-            uriTemplate: '/recipe/{id}/ingredients',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'ingredients',
-                    toProperty: 'recipes',
-                    fromClass: Recipe::class,
-                    toClass: Ingredient::class)
-            ])]
+        // TODO Toutes les Ingrédients d'une Recette) 
+    ]
 )]
 class Ingredient
 {
@@ -42,12 +34,8 @@ class Ingredient
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'ingredients')]
-    private Collection $recipes;
-
     public function __construct()
     {
-        $this->recipes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -63,30 +51,6 @@ class Ingredient
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Recipe>
-     */
-    public function getRecipes(): Collection
-    {
-        return $this->recipes;
-    }
-
-    public function addRecipe(Recipe $recipe): static
-    {
-        if (!$this->recipes->contains($recipe)) {
-            $this->recipes->add($recipe);
-        }
-
-        return $this;
-    }
-
-    public function removeRecipe(Recipe $recipe): static
-    {
-        $this->recipes->removeElement($recipe);
 
         return $this;
     }
