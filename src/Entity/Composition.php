@@ -19,6 +19,14 @@ class Composition
     #[ORM\Column(length: 20)]
     private ?string $unit = null;
 
+    #[ORM\ManyToOne(inversedBy: 'compositions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Recipe $recipe = null;
+
+    #[ORM\ManyToOne(inversedBy: 'compositions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Ingredient $ingredient = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +52,30 @@ class Composition
     public function setUnit(string $unit): static
     {
         $this->unit = $unit;
+
+        return $this;
+    }
+
+    public function getRecipe(): ?Recipe
+    {
+        return $this->recipe;
+    }
+
+    public function setRecipe(?Recipe $recipe): static
+    {
+        $this->recipe = $recipe;
+
+        return $this;
+    }
+
+    public function getIngredient(): ?Ingredient
+    {
+        return $this->ingredient;
+    }
+
+    public function setIngredient(?Ingredient $ingredient): static
+    {
+        $this->ingredient = $ingredient;
 
         return $this;
     }

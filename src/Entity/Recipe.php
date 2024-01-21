@@ -78,11 +78,15 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true)]
+    private Collection $compositions;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
+        $this->compositions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -231,6 +235,36 @@ class Recipe
             // set the owning side to null (unless already changed)
             if ($favorite->getRecipe() === $this) {
                 $favorite->setRecipe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Composition>
+     */
+    public function getCompositions(): Collection
+    {
+        return $this->compositions;
+    }
+
+    public function addComposition(Composition $composition): static
+    {
+        if (!$this->compositions->contains($composition)) {
+            $this->compositions->add($composition);
+            $composition->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComposition(Composition $composition): static
+    {
+        if ($this->compositions->removeElement($composition)) {
+            // set the owning side to null (unless already changed)
+            if ($composition->getRecipe() === $this) {
+                $composition->setRecipe(null);
             }
         }
 
