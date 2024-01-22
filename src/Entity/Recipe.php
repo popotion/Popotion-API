@@ -81,6 +81,9 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true)]
     private Collection $compositions;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $datePublication = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -267,6 +270,18 @@ class Recipe
                 $composition->setRecipe(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDatePublication(): ?\DateTimeInterface
+    {
+        return $this->datePublication;
+    }
+
+    public function setDatePublication(\DateTimeInterface $datePublication): static
+    {
+        $this->datePublication = $datePublication;
 
         return $this;
     }
