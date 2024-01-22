@@ -26,7 +26,7 @@ class RecipeProcessor implements ProcessorInterface
 
     public function setAuthor(Recipe $recipe, mixed $author): void
     {
-        if ($author != null)
-            $recipe->setAuthor($author);
+        if ($author == null) return;
+        $recipe->setAuthor($author);
     }
 }
