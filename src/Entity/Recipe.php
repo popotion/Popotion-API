@@ -11,18 +11,30 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RecipeRepository;
+use App\State\RecipeProcessor;
+use App\Security\Voter\RecipeVoter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ApiResource(
     operations: [
         new Get(),
         new Patch(),
-        new Delete(),
-        new Post(),
+        new Delete(
+            security: 'is_granted(\'' . RecipeVoter::DELETE . '\', object)'
+        ),
+        new Post(
+            processor: RecipeProcessor::class,
+            validationContext: [
+                'groups' => ['Default', 'recipe:create']
+            ],
+            security: 'is_granted(\'' . RecipeVoter::CREATE . '\', object)'
+        ),
         new GetCollection(),
         // Toutes les Recettes d'un Utilisateur) //
         new GetCollection(
@@ -56,23 +68,37 @@ class Recipe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['recipe:read'])]
     private ?int $id = null;
 
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\Length(min: 3, max: 40, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 40 caractères', groups: ['recipe:create'])]
     #[ORM\Column(length: 255)]
+    #[Groups(['recipe:read', 'recipe:create'])]
     private ?string $title = null;
 
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\Length(min: 3, max: 420, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 420 caractères', groups: ['recipe:create'])]
+    #[Groups(['recipe:read', 'recipe:create'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
     private array $details = [];
 
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
     private array $preparation = [];
 
     #[ORM\ManyToOne(inversedBy: 'recipes', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[ApiProperty(writable: false)]
+    #[Groups(['recipe:read'])]
     private ?User $author = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes')]
