@@ -70,8 +70,9 @@ class Recipe
     #[ORM\Column]
     private array $preparation = [];
 
-    #[ORM\ManyToOne(inversedBy: 'recipes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'recipes', fetch: 'EAGER')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ApiProperty(writable: false)]
     private ?User $author = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes')]
