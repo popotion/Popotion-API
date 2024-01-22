@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -44,7 +45,11 @@ use Doctrine\ORM\Mapping as ORM;
             ]
         ),
         // TODO Toutes les Recettes ou sont contenues un Ingrédient)
-    ]
+    ],
+    normalizationContext: [
+        'groups' => ['recipe:read']
+    ],
+    order: ['datePublication' => 'DESC']
 )]
 class Recipe
 {
@@ -81,6 +86,7 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true)]
     private Collection $compositions;
 
+    #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
 
@@ -90,6 +96,12 @@ class Recipe
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
         $this->compositions = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function prePersistDatePublication(): void
+    {
+        $this->datePublication = new \DateTime();
     }
 
     public function getId(): ?int
