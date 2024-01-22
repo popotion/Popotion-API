@@ -31,7 +31,8 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'recipes',
                     fromClass: User::class,
                 )
-            ]),
+            ]
+        ),
         // Toutes les Recettes contenues dans une Catégorie) //
         new GetCollection(
             uriTemplate: '/categories/{id}/recipes',
@@ -40,17 +41,10 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'recipes',
                     fromClass: Category::class,
                 )
-            ]),
-        // Toutes les Recettes ou sont contenues un Ingrédient) //
-        new GetCollection(
-            uriTemplate: '/ingredients/{id}/recipes',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'recipes',
-                    toProperty: 'ingredients',
-                    fromClass: Ingredient::class,
-                    toClass: Recipe::class)
-            ])]
+            ]
+        ),
+        // TODO Toutes les Recettes ou sont contenues un Ingrédient)
+    ]
 )]
 class Recipe
 {
@@ -84,15 +78,15 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\ManyToMany(targetEntity: Ingredient::class, mappedBy: 'recipes')]
-    private Collection $ingredients;
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true)]
+    private Collection $compositions;
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->favorites = new ArrayCollection();
-        $this->ingredients = new ArrayCollection();
+        $this->compositions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -248,27 +242,30 @@ class Recipe
     }
 
     /**
-     * @return Collection<int, Ingredient>
+     * @return Collection<int, Composition>
      */
-    public function getIngredients(): Collection
+    public function getCompositions(): Collection
     {
-        return $this->ingredients;
+        return $this->compositions;
     }
 
-    public function addIngredient(Ingredient $ingredient): static
+    public function addComposition(Composition $composition): static
     {
-        if (!$this->ingredients->contains($ingredient)) {
-            $this->ingredients->add($ingredient);
-            $ingredient->addRecipe($this);
+        if (!$this->compositions->contains($composition)) {
+            $this->compositions->add($composition);
+            $composition->setRecipe($this);
         }
 
         return $this;
     }
 
-    public function removeIngredient(Ingredient $ingredient): static
+    public function removeComposition(Composition $composition): static
     {
-        if ($this->ingredients->removeElement($ingredient)) {
-            $ingredient->removeRecipe($this);
+        if ($this->compositions->removeElement($composition)) {
+            // set the owning side to null (unless already changed)
+            if ($composition->getRecipe() === $this) {
+                $composition->setRecipe(null);
+            }
         }
 
         return $this;

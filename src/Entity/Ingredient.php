@@ -21,16 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(),
         new Post(),
         new GetCollection(),
-        // Toutes les Ingrédients d'une Recette) //
-        new GetCollection(
-            uriTemplate: '/recipe/{id}/ingredients',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'ingredients',
-                    toProperty: 'recipes',
-                    fromClass: Recipe::class,
-                    toClass: Ingredient::class)
-            ])]
+        // TODO Toutes les Ingrédients d'une Recette) 
+    ]
 )]
 class Ingredient
 {
@@ -42,12 +34,12 @@ class Ingredient
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'ingredients')]
-    private Collection $recipes;
+    #[ORM\OneToMany(mappedBy: 'ingredient', targetEntity: Composition::class, orphanRemoval: true)]
+    private Collection $compositions;
 
     public function __construct()
     {
-        $this->recipes = new ArrayCollection();
+        $this->compositions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,25 +60,31 @@ class Ingredient
     }
 
     /**
-     * @return Collection<int, Recipe>
+     * @return Collection<int, Composition>
      */
-    public function getRecipes(): Collection
+    public function getCompositions(): Collection
     {
-        return $this->recipes;
+        return $this->compositions;
     }
 
-    public function addRecipe(Recipe $recipe): static
+    public function addComposition(Composition $composition): static
     {
-        if (!$this->recipes->contains($recipe)) {
-            $this->recipes->add($recipe);
+        if (!$this->compositions->contains($composition)) {
+            $this->compositions->add($composition);
+            $composition->setIngredient($this);
         }
 
         return $this;
     }
 
-    public function removeRecipe(Recipe $recipe): static
+    public function removeComposition(Composition $composition): static
     {
-        $this->recipes->removeElement($recipe);
+        if ($this->compositions->removeElement($composition)) {
+            // set the owning side to null (unless already changed)
+            if ($composition->getIngredient() === $this) {
+                $composition->setIngredient(null);
+            }
+        }
 
         return $this;
     }
