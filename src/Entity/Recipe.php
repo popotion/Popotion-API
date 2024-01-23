@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\RecipeRepository;
 use App\State\RecipeProcessor;
 use App\Security\Voter\RecipeVoter;
+use App\Dto\CompositionData;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -20,11 +21,17 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ApiResource(
     operations: [
         new Get(),
-        new Patch(),
+        new Patch(
+            denormalizationContext: [
+                'groups' => ['recipe:update']
+            ],
+            security: 'is_granted(\'' . RecipeVoter::EDIT . '\', object)'
+        ),
         new Delete(
             security: 'is_granted(\'' . RecipeVoter::DELETE . '\', object)'
         ),
@@ -33,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             validationContext: [
                 'groups' => ['Default', 'recipe:create']
             ],
-            security: 'is_granted(\'' . RecipeVoter::CREATE . '\', object)'
+            security: "is_granted('ROLE_USER')"
         ),
         new GetCollection(),
         // Toutes les Recettes d'un Utilisateur) //
@@ -104,13 +111,23 @@ class Recipe
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes')]
     private Collection $categories;
 
+    #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
+    #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true)]
+    /**
+     * @var CompositionData[]
+     */
+    #[ApiProperty(writable: true)]
+    #[Assert\Valid]
+    private array $compositionsData = [];
+
+    #[ApiProperty(writable: false)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $compositions;
 
     #[ApiProperty(writable: false)]
@@ -280,6 +297,17 @@ class Recipe
             }
         }
 
+        return $this;
+    }
+
+    public function getCompositionsData(): array
+    {
+        return $this->compositionsData;
+    }
+
+    public function setCompositionsData(array $compositionsData): self
+    {
+        $this->compositionsData = $compositionsData;
         return $this;
     }
 
