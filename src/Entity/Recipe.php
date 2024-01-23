@@ -40,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             validationContext: [
                 'groups' => ['Default', 'recipe:create']
             ],
-            security: "is_granted('ROLE_USER')"
+            security: 'is_granted(\'' . RecipeVoter::CREATE . '\', object)'
         ),
         new GetCollection(),
         // Toutes les Recettes d'un Utilisateur) //
