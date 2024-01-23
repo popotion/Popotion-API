@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -28,8 +29,11 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'categories',
                     toProperty: 'recipes',
                     fromClass: Recipe::class,
-                    toClass: Category::class)
-            ])],
+                    toClass: Category::class
+                )
+            ]
+        )
+    ],
 )]
 class Category
 {
@@ -41,6 +45,7 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ApiProperty(writable: false)]
     #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'categories')]
     private Collection $recipes;
 
