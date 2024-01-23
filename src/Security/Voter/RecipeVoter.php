@@ -16,7 +16,7 @@ class RecipeVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::EDIT, self::CREATE, self::DELETE])
-            && $subject instanceof Recipe;
+            && $subject instanceof Recipe || null === $subject;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
