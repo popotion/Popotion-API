@@ -46,7 +46,7 @@ class Category
     private ?string $name = null;
 
     #[ApiProperty(writable: false)]
-    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'categories')]
+    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'categories', cascade: ['persist'])]
     private Collection $recipes;
 
     public function __construct()
