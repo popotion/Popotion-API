@@ -108,7 +108,14 @@ class Recipe
     #[Groups(['recipe:read'])]
     private ?User $author = null;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes')]
+    /**
+     * @var string[]
+     */
+    #[ApiProperty(writable: true)]
+    private array $categoryNames = [];
+
+    #[ApiProperty(writable: false)]
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'])]
     private Collection $categories;
 
     #[ApiProperty(writable: false)]
@@ -209,6 +216,18 @@ class Recipe
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getCategoryNames(): array
+    {
+        return $this->categoryNames;
+    }
+
+    public function setCategoryNames(array $categoryNames): static
+    {
+        $this->categoryNames = $categoryNames;
 
         return $this;
     }
