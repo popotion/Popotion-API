@@ -93,6 +93,7 @@ class Recipe
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Assert\Valid]
     #[ApiProperty(writable: true, readable: false)]
     private RecipeDetails $recipeDetails;
 
