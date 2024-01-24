@@ -10,9 +10,11 @@ class UserVoter extends Voter
 {
     public const EDIT = 'USER_EDIT';
 
+    public const DELETE = 'USER_DELETE';
+
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::EDIT])
+        return in_array($attribute, [self::EDIT, self::DELETE])
             && $subject instanceof UserInterface;
     }
 
@@ -24,6 +26,10 @@ class UserVoter extends Voter
 
         switch ($attribute) {
             case self::EDIT:
+                if ($subject == $user || in_array('ROLE_ADMIN', $user->getRoles()))
+                    return true;
+                break;
+            case self::DELETE:
                 if ($subject == $user || in_array('ROLE_ADMIN', $user->getRoles()))
                     return true;
                 break;
