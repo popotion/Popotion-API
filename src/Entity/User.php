@@ -56,13 +56,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'recipe:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read', 'user:update', 'user:create'])]
+    #[Groups(['user:read', 'user:update', 'user:create', 'recipe:read'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères')]
@@ -89,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[UserPassword(message: 'Le mot de passe actuel est incorrect.', groups: ['user:update'])]
     private ?string $currentPlainPassword = null;
 
-    #[Groups(['user:read', 'user:update'])]
+    #[Groups(['user:read', 'user:update', 'recipe:read'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $status = null;
 
@@ -97,14 +97,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateOfBirth = null;
 
-    #[Groups(['user:read', 'user:update', 'user:create'])]
+    #[Groups(['user:read', 'user:update', 'user:create', 'recipe:read'])]
     #[Assert\NotBlank(groups: ['user:create'])]
     #[Assert\NotNull(groups: ['user:create'])]
     #[Assert\Email(message: 'L\'adresse mail n\'est pas valide.', groups: ['user:create', 'user:update'])]
     #[ORM\Column(length: 255, unique: true)]
     private ?string $mailAdress = null;
 
-    #[Groups(['user:read', 'user:update'])]
+    #[Groups(['user:read', 'user:update', 'recipe:read'])]
     #[ApiProperty(readable: true, writable: false)]
     #[ORM\Column(options: ["default" => false])]
     private ?bool $premium = false;
