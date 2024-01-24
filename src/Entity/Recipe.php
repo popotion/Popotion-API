@@ -102,7 +102,7 @@ class Recipe
     #[Assert\Valid]
     #[ApiProperty(writable: true, readable: false)]
     #[Groups(['recipe:create', 'recipe:update'])]
-    private RecipeDetails $recipeDetails;
+    private ?RecipeDetails $recipeDetails;
 
     #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
@@ -209,9 +209,9 @@ class Recipe
         return $this;
     }
 
-    public function getRecipeDetails(): RecipeDetails
+    public function getRecipeDetails(): ?RecipeDetails
     {
-        return $this->recipeDetails;
+        return $this->recipeDetails ?? null;
     }
 
     public function setRecipeDetails(RecipeDetails $recipeDetails): static
