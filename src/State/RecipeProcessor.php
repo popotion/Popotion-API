@@ -30,11 +30,11 @@ class RecipeProcessor implements ProcessorInterface
         $user = $this->security->getUser();
         $this->setAuthor($data, $user);
 
-        $this->createIngredientsAndSetCompositions($data, $data->getCompositionsData());
+        if (!empty($data->getCompositionsData())) $this->createIngredientsAndSetCompositions($data, $data->getCompositionsData());
 
-        $this->createCategories($data->getCategoryNames(), $data);
+        if (!empty($data->getCategoryNames())) $this->createCategories($data->getCategoryNames(), $data);
 
-        $this->setRecipeDetails($data, $data->getRecipeDetails());
+        if ($data->getRecipeDetails() !== null) $this->setRecipeDetails($data, $data->getRecipeDetails());
 
         $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
