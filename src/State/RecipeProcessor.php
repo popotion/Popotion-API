@@ -4,6 +4,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Dto\RecipeDetails;
 use App\Entity\Category;
 use App\Entity\Composition;
 use App\Entity\Recipe;
@@ -32,6 +33,8 @@ class RecipeProcessor implements ProcessorInterface
         $this->createIngredientsAndSetCompositions($data, $data->getCompositionsData());
 
         $this->createCategories($data->getCategoryNames(), $data);
+
+        $this->setRecipeDetails($data, $data->getRecipeDetails());
 
         $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
@@ -72,5 +75,10 @@ class RecipeProcessor implements ProcessorInterface
             }
             $recipe->addCategory($category);
         }
+    }
+
+    public function setRecipeDetails(Recipe $recipe, RecipeDetails $recipeDetails): void
+    {
+        $recipe->setDetails($recipeDetails->toArray());
     }
 }
