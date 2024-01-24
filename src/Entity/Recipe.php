@@ -15,6 +15,7 @@ use App\State\RecipeProcessor;
 use App\Security\Voter\RecipeVoter;
 use App\Dto\CompositionData;
 use App\Dto\RecipeDetails;
+use App\Validator\RecipeCreateGroupGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -39,7 +40,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             processor: RecipeProcessor::class,
             validationContext: [
-                'groups' => ['Default', 'recipe:create']
+                'groups' => RecipeCreateGroupGenerator::class
             ],
             security: 'is_granted(\'' . RecipeVoter::CREATE . '\', object)'
         ),
@@ -122,6 +123,8 @@ class Recipe
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Count(min: 1, minMessage: 'Il faut au moins une catégorie', groups: ['recipe:create'])]
+    #[Assert\Count(max: 1, maxMessage: 'Il faut au plus 1 catégorie. Passez premium pour ajouter 3 catégories !', groups: ['recipe:create:normal'])]
+    #[Assert\Count(max: 3, maxMessage: 'Il faut au plus 3 catégories', groups: ['recipe:create:premium'])]
     #[Groups(['recipe:create', 'recipe:update'])]
     private array $categoryNames = [];
 
