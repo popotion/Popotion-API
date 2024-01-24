@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(),
         new Delete(
-            security: 'is_granted(\'' . UserVoter::EDIT . '\', object)'
+            security: 'is_granted(\'' . UserVoter::DELETE . '\', object)'
         ),
         new GetCollection(),
         new Patch(
