@@ -83,18 +83,19 @@ class Recipe
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 40, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 40 caractères', groups: ['recipe:create'])]
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read', 'recipe:create'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     private ?string $title = null;
 
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 420, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 420 caractères', groups: ['recipe:create'])]
-    #[Groups(['recipe:read', 'recipe:create'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[Assert\Valid]
     #[ApiProperty(writable: true, readable: false)]
+    #[Groups(['recipe:create', 'recipe:update'])]
     private RecipeDetails $recipeDetails;
 
     #[Groups(['recipe:read'])]
@@ -102,10 +103,10 @@ class Recipe
     #[ORM\Column]
     private array $details = [];
 
-    #[Groups(['recipe:read', 'recipe:create'])]
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     private array $preparation = [];
 
     #[ORM\ManyToOne(inversedBy: 'recipes', fetch: 'EAGER')]
@@ -120,6 +121,8 @@ class Recipe
     #[ApiProperty(writable: true, readable: false)]
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\Count(min: 1, minMessage: 'Il faut au moins une catégorie', groups: ['recipe:create'])]
+    #[Groups(['recipe:create', 'recipe:update'])]
     private array $categoryNames = [];
 
     #[Groups(['recipe:read'])]
@@ -142,6 +145,7 @@ class Recipe
      */
     #[ApiProperty(writable: true, readable: false)]
     #[Assert\Valid]
+    #[Groups(['recipe:create', 'recipe:update'])]
     private array $compositionsData = [];
 
     #[Groups(['recipe:read'])]
