@@ -118,6 +118,8 @@ class Recipe
      * @var string[]
      */
     #[ApiProperty(writable: true, readable: false)]
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
     private array $categoryNames = [];
 
     #[Groups(['recipe:read'])]
