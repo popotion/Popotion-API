@@ -16,6 +16,7 @@ use App\Security\Voter\RecipeVoter;
 use App\Dto\CompositionData;
 use App\Dto\RecipeDetails;
 use App\Validator\RecipeCreateGroupGenerator;
+use App\Validator\RecipeUpdateGroupGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -29,6 +30,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(),
         new Patch(
+            processor: RecipeProcessor::class,
+            validationContext: [
+                'groups' => RecipeUpdateGroupGenerator::class
+            ],
             denormalizationContext: [
                 'groups' => ['recipe:update']
             ],
@@ -123,8 +128,8 @@ class Recipe
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Count(min: 1, minMessage: 'Il faut au moins une catégorie', groups: ['recipe:create'])]
-    #[Assert\Count(max: 1, maxMessage: 'Il faut au plus 1 catégorie. Passez premium pour ajouter 3 catégories !', groups: ['recipe:create:normal'])]
-    #[Assert\Count(max: 3, maxMessage: 'Il faut au plus 3 catégories', groups: ['recipe:create:premium'])]
+    #[Assert\Count(max: 1, maxMessage: 'Il faut au plus 1 catégorie. Passez premium pour ajouter 3 catégories !', groups: ['recipe:create:normal', 'recipe:update:normal'])]
+    #[Assert\Count(max: 3, maxMessage: 'Il faut au plus 3 catégories', groups: ['recipe:create:premium', 'recipe:update:premium'])]
     #[Groups(['recipe:create', 'recipe:update'])]
     private array $categoryNames = [];
 
