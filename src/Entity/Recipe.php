@@ -14,6 +14,7 @@ use App\Repository\RecipeRepository;
 use App\State\RecipeProcessor;
 use App\Security\Voter\RecipeVoter;
 use App\Dto\CompositionData;
+use App\Dto\RecipeDetails;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -92,9 +93,11 @@ class Recipe
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[Groups(['recipe:read', 'recipe:create'])]
-    #[Assert\NotNull(groups: ['recipe:create'])]
-    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[ApiProperty(writable: true, readable: false)]
+    private RecipeDetails $recipeDetails;
+
+    #[Groups(['recipe:read'])]
+    #[ApiProperty(writable: false)]
     #[ORM\Column]
     private array $details = [];
 
@@ -113,7 +116,7 @@ class Recipe
     /**
      * @var string[]
      */
-    #[ApiProperty(writable: true)]
+    #[ApiProperty(writable: true, readable: false)]
     private array $categoryNames = [];
 
     #[Groups(['recipe:read'])]
@@ -134,7 +137,7 @@ class Recipe
     /**
      * @var CompositionData[]
      */
-    #[ApiProperty(writable: true)]
+    #[ApiProperty(writable: true, readable: false)]
     #[Assert\Valid]
     private array $compositionsData = [];
 
@@ -187,6 +190,18 @@ class Recipe
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getRecipeDetails(): RecipeDetails
+    {
+        return $this->recipeDetails;
+    }
+
+    public function setRecipeDetails(RecipeDetails $recipeDetails): static
+    {
+        $this->recipeDetails = $recipeDetails;
 
         return $this;
     }
