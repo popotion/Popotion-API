@@ -92,11 +92,13 @@ class Recipe
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Groups(['recipe:read', 'recipe:create'])]
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
     private array $details = [];
 
+    #[Groups(['recipe:read', 'recipe:create'])]
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
@@ -114,16 +116,19 @@ class Recipe
     #[ApiProperty(writable: true)]
     private array $categoryNames = [];
 
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
-    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'], fetch: 'EAGER')]
     private Collection $categories;
 
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comment::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $comments;
 
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $favorites;
 
     /**
@@ -133,10 +138,12 @@ class Recipe
     #[Assert\Valid]
     private array $compositionsData = [];
 
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
-    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'], fetch: 'EAGER')]
     private Collection $compositions;
 
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
