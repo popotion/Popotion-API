@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read', 'user:create', 'recipe:read'])]
+    #[Groups(['user:read', 'user:create', 'recipe:read', 'comment:read'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères')]
@@ -114,7 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $recipes;
 
     #[Groups(['user:read'])]
-    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $comments;
 
     #[Groups(['user:read'])]
