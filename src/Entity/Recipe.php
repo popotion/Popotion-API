@@ -156,7 +156,6 @@ class Recipe
     #[Groups(['recipe:create', 'recipe:update'])]
     private array $compositionsData = [];
 
-    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'], fetch: 'EAGER')]
     private Collection $compositions;
@@ -407,5 +406,19 @@ class Recipe
         $this->datePublication = $datePublication;
 
         return $this;
+    }
+
+    #[Groups(['recipe:read'])]
+    public function getIngredients(): array
+    {
+        $ingredients = [];
+        foreach ($this->compositions as $composition) {
+            $ingredients[] = [
+                'ingredientName' => $composition->getIngredient()->getName(),
+                'quantity' => $composition->getQuantity(),
+                'unit' => $composition->getUnit()
+            ];
+        }
+        return $ingredients;
     }
 }
