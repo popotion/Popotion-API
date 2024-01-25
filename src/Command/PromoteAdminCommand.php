@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'PromoteAdminCommand',
-    description: 'Promotes a member to admin',
+    description: 'Promotes a user to admin',
 )]
 class PromoteAdminCommand extends Command
 {
