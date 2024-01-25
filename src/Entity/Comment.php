@@ -21,7 +21,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new Get(),
-        new Delete(),
+        new Delete(
+            security: 'is_granted(\'' . CommentVoter::DELETE . '\', object)'
+        ),
         new Post(
             processor: CommentProcessor::class,
             denormalizationContext: [
@@ -29,7 +31,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ],
             security: 'is_granted(\'' . CommentVoter::CREATE . '\', object)'
         ),
-        new Patch(),
+        new Patch(
+            security: 'is_granted(\'' . CommentVoter::EDIT . '\', object)',
+            denormalizationContext: [
+                'groups' => ['comment:update']
+            ]
+        ),
         // Tous les commentaires d'un Utilisateur //
         new GetCollection(
             uriTemplate: '/user/{id}/comments',
@@ -60,7 +67,7 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read', 'comment:create'])]
+    #[Groups(['comment:read', 'comment:create', 'comment:update'])]
     private ?string $message = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
