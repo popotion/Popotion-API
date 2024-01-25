@@ -7,6 +7,7 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\User;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserProcessor implements ProcessorInterface
 {
@@ -18,6 +19,7 @@ class UserProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
     {
+        $this->verifyCurrentPlainPassword($data, $data->getCurrentPlainPassword());
         $this->encryptPassword($data, $data->getPlainPassword());
         $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
@@ -27,5 +29,11 @@ class UserProcessor implements ProcessorInterface
         if ($plainPassword == null) return;
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
+    }
+
+    public function verifyCurrentPlainPassword(User $user, ?string $currentPlainPassword): bool
+    {
+        if ($currentPlainPassword == null) return false;
+        return $this->passwordHasher->isPasswordValid($user, $currentPlainPassword) ? true : throw new AccessDeniedHttpException('Le mot de passe actuel est incorrect');
     }
 }
