@@ -84,6 +84,10 @@ class Comment
     #[Groups(['comment:read'])]
     private ?User $author = null;
 
+    #[ApiProperty(writable: false)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $datePublication = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +125,18 @@ class Comment
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getDatePublication(): ?\DateTimeInterface
+    {
+        return $this->datePublication;
+    }
+
+    public function setDatePublication(\DateTimeInterface $datePublication): static
+    {
+        $this->datePublication = $datePublication;
 
         return $this;
     }
