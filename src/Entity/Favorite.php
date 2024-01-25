@@ -27,26 +27,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'groups' => ['favorite:create']
             ]
         ),
-        // Tous les Favoris d'un Utilisateur) //
-        new GetCollection(
-            uriTemplate: '/user/{id}/favoris',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: User::class,
-                )
-            ]
-        ),
-        // Tous les Favoris d'une Recette) //
-        new GetCollection(
-            uriTemplate: '/recipe/{id}/favoris',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: Recipe::class,
-                )
-            ]
-        ),
     ],
     normalizationContext: [
         'groups' => ['favorite:read']
