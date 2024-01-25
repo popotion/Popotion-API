@@ -138,12 +138,12 @@ class Recipe
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'], fetch: 'EAGER')]
     private Collection $categories;
 
-    #[Groups(['recipe:read', 'user:read'])]
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comment::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $comments;
 
-    #[Groups(['recipe:read', 'user:read'])]
+    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $favorites;
@@ -420,5 +420,17 @@ class Recipe
             ];
         }
         return $ingredients;
+    }
+
+    #[Groups(['user:read'])]
+    public function getNbComments(): int
+    {
+        return $this->comments->count();
+    }
+
+    #[Groups(['user:read'])]
+    public function getNbFavorites(): int
+    {
+        return $this->favorites->count();
     }
 }

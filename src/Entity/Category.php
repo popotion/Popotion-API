@@ -44,7 +44,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read'])]
     private ?string $name = null;
 
     #[ApiProperty(writable: false)]
