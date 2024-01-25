@@ -35,6 +35,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ]
         )
     ],
+    normalizationContext: ['groups' => ['category:read']],
 )]
 class Category
 {
@@ -44,11 +45,12 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read', 'user:read'])]
+    #[Groups(['recipe:read', 'user:read', 'category:read'])]
     private ?string $name = null;
 
     #[ApiProperty(writable: false)]
-    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'categories', cascade: ['persist'])]
+    #[Groups(['category:read'])]
+    #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'categories', cascade: ['persist'], fetch: 'EAGER')]
     private Collection $recipes;
 
     public function __construct()
