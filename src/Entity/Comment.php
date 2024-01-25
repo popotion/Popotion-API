@@ -19,7 +19,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
         new Delete(
             security: 'is_granted(\'' . CommentVoter::DELETE . '\', object)'
         ),
