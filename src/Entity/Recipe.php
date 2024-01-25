@@ -89,7 +89,7 @@ class Recipe
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 40, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 40 caractères', groups: ['recipe:create'])]
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update', 'user:read'])]
     private ?string $title = null;
 
     #[Assert\NotNull(groups: ['recipe:create'])]
@@ -133,17 +133,17 @@ class Recipe
     #[Groups(['recipe:create', 'recipe:update'])]
     private array $categoryNames = [];
 
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'], fetch: 'EAGER')]
     private Collection $categories;
 
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Comment::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $comments;
 
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Favorite::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $favorites;
