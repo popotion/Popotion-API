@@ -75,7 +75,7 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:create'])]
+    #[Groups(['comment:create', 'comment:read'])]
     private ?Recipe $recipe = null;
 
     #[ApiProperty(writable: false)]
