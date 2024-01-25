@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -10,14 +11,24 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\CommentRepository;
+use App\State\CommentProcessor;
+use App\Security\Voter\CommentVoter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ApiResource(
     operations: [
+        new Get(),
         new Delete(),
-        new Post(),
+        new Post(
+            processor: CommentProcessor::class,
+            denormalizationContext: [
+                'groups' => ['comment:create']
+            ],
+            security: 'is_granted(\'' . CommentVoter::CREATE . '\', object)'
+        ),
         new Patch(),
         // Tous les commentaires d'un Utilisateur //
         new GetCollection(
@@ -27,7 +38,8 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'comments',
                     fromClass: User::class,
                 )
-            ]),
+            ]
+        ),
         // Tous les commentaires lié à une Recette //
         new GetCollection(
             uriTemplate: '/recipe/{id}/comments',
@@ -36,8 +48,9 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'comments',
                     fromClass: Recipe::class,
                 )
-            ])
-        ]
+            ]
+        )
+    ]
 )]
 class Comment
 {
@@ -47,13 +60,16 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['comment:read', 'comment:create'])]
     private ?string $message = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read', 'comment:create'])]
     private ?Recipe $recipe = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
+    #[ApiProperty(writable: false)]
+    #[ORM\ManyToOne(inversedBy: 'comments', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
