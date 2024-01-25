@@ -14,6 +14,9 @@ use App\Repository\RecipeRepository;
 use App\State\RecipeProcessor;
 use App\Security\Voter\RecipeVoter;
 use App\Dto\CompositionData;
+use App\Dto\RecipeDetails;
+use App\Validator\RecipeCreateGroupGenerator;
+use App\Validator\RecipeUpdateGroupGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -27,6 +30,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(),
         new Patch(
+            processor: RecipeProcessor::class,
+            validationContext: [
+                'groups' => RecipeUpdateGroupGenerator::class
+            ],
             denormalizationContext: [
                 'groups' => ['recipe:update']
             ],
@@ -38,7 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             processor: RecipeProcessor::class,
             validationContext: [
-                'groups' => ['Default', 'recipe:create']
+                'groups' => RecipeCreateGroupGenerator::class
             ],
             security: 'is_granted(\'' . RecipeVoter::CREATE . '\', object)'
         ),
@@ -82,41 +89,51 @@ class Recipe
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 40, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 40 caractères', groups: ['recipe:create'])]
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read', 'recipe:create'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update', 'user:read'])]
     private ?string $title = null;
 
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 420, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 420 caractères', groups: ['recipe:create'])]
-    #[Groups(['recipe:read', 'recipe:create'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[Groups(['recipe:read', 'recipe:create'])]
-    #[Assert\NotNull(groups: ['recipe:create'])]
-    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\Valid]
+    #[ApiProperty(writable: true, readable: false)]
+    #[Groups(['recipe:create', 'recipe:update'])]
+    private ?RecipeDetails $recipeDetails;
+
+    #[Groups(['recipe:read'])]
+    #[ApiProperty(writable: false)]
     #[ORM\Column]
     private array $details = [];
 
-    #[Groups(['recipe:read', 'recipe:create'])]
     #[Assert\NotNull(groups: ['recipe:create'])]
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[ORM\Column]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     private array $preparation = [];
 
     #[ORM\ManyToOne(inversedBy: 'recipes', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[ApiProperty(writable: false)]
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'comment:read'])]
     private ?User $author = null;
 
     /**
      * @var string[]
      */
-    #[ApiProperty(writable: true)]
+    #[ApiProperty(writable: true, readable: false)]
+    #[Assert\NotNull(groups: ['recipe:create'])]
+    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\Count(min: 1, minMessage: 'Il faut au moins une catégorie', groups: ['recipe:create'])]
+    #[Assert\Count(max: 1, maxMessage: 'Il faut au plus 1 catégorie. Passez premium pour ajouter 3 catégories !', groups: ['recipe:create:normal', 'recipe:update:normal'])]
+    #[Assert\Count(max: 3, maxMessage: 'Il faut au plus 3 catégories', groups: ['recipe:create:premium', 'recipe:update:premium'])]
+    #[Groups(['recipe:create', 'recipe:update'])]
     private array $categoryNames = [];
 
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'recipes', cascade: ['persist'], fetch: 'EAGER')]
     private Collection $categories;
@@ -134,11 +151,11 @@ class Recipe
     /**
      * @var CompositionData[]
      */
-    #[ApiProperty(writable: true)]
+    #[ApiProperty(writable: true, readable: false)]
     #[Assert\Valid]
+    #[Groups(['recipe:create', 'recipe:update'])]
     private array $compositionsData = [];
 
-    #[Groups(['recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'], fetch: 'EAGER')]
     private Collection $compositions;
@@ -187,6 +204,18 @@ class Recipe
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getRecipeDetails(): ?RecipeDetails
+    {
+        return $this->recipeDetails ?? null;
+    }
+
+    public function setRecipeDetails(RecipeDetails $recipeDetails): static
+    {
+        $this->recipeDetails = $recipeDetails;
 
         return $this;
     }
@@ -377,5 +406,31 @@ class Recipe
         $this->datePublication = $datePublication;
 
         return $this;
+    }
+
+    #[Groups(['recipe:read'])]
+    public function getIngredients(): array
+    {
+        $ingredients = [];
+        foreach ($this->compositions as $composition) {
+            $ingredients[] = [
+                'ingredientName' => $composition->getIngredient()->getName(),
+                'quantity' => $composition->getQuantity(),
+                'unit' => $composition->getUnit()
+            ];
+        }
+        return $ingredients;
+    }
+
+    #[Groups(['user:read'])]
+    public function getNbComments(): int
+    {
+        return $this->comments->count();
+    }
+
+    #[Groups(['user:read'])]
+    public function getNbFavorites(): int
+    {
+        return $this->favorites->count();
     }
 }
