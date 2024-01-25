@@ -65,7 +65,7 @@ class Favorite
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[Groups(['favorite:create', 'favorite:read'])]
+    #[Groups(['favorite:create', 'favorite:read', 'user:read'])]
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
