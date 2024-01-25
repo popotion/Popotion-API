@@ -11,7 +11,7 @@ class CommentVoter extends Voter
 {
     public const CREATE = 'COMMENT_CREATE';
 
-    public const DELETE = 'USER_DELETE';
+    public const DELETE = 'COMMENT_DELETE';
 
     public const EDIT = 'COMMENT_EDIT';
 
