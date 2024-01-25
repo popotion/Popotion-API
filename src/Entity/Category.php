@@ -8,10 +8,13 @@ use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\CategoryRepository;
+use App\Security\Voter\CategoryVoter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -20,8 +23,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new Get(),
         new GetCollection(),
-        new Delete(),
+        new Delete(
+            security: 'is_granted(\'' . CategoryVoter::DELETE . '\', object)'
+        ),
         new Post(),
+        new Patch(
+            security: 'is_granted(\'' . CategoryVoter::EDIT . '\', object)'
+        ),
         // Toutes les catégories d'une Recette //
         new GetCollection(
             uriTemplate: '/recipe/{id}/categories',
@@ -47,6 +55,10 @@ class Category
     #[ORM\Column(length: 255)]
     #[Groups(['recipe:read', 'user:read', 'category:read'])]
     private ?string $name = null;
+
+    #[Groups(['category:read'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ApiProperty(writable: false)]
     #[Groups(['category:read'])]
@@ -95,6 +107,18 @@ class Category
     public function removeRecipe(Recipe $recipe): static
     {
         $this->recipes->removeElement($recipe);
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
