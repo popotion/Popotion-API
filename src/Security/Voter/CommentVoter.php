@@ -13,9 +13,11 @@ class CommentVoter extends Voter
 
     public const DELETE = 'USER_DELETE';
 
+    public const EDIT = 'COMMENT_EDIT';
+
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::CREATE, self::DELETE])
+        return in_array($attribute, [self::CREATE, self::DELETE, self::EDIT])
             && $subject instanceof Comment || null === $subject;
     }
 
@@ -32,6 +34,10 @@ class CommentVoter extends Voter
                 break;
             case self::DELETE:
                 if ($subject == $user || in_array('ROLE_ADMIN', $user->getRoles()))
+                    return true;
+                break;
+            case self::EDIT:
+                if ($subject->getAuthor() == $user || in_array('ROLE_ADMIN', $user->getRoles()))
                     return true;
                 break;
         }
