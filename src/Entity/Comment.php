@@ -38,26 +38,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'groups' => ['comment:update']
             ]
         ),
-        // Tous les commentaires d'un Utilisateur //
-        new GetCollection(
-            uriTemplate: '/user/{id}/comments',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: User::class,
-                )
-            ]
-        ),
-        // Tous les commentaires lié à une Recette //
-        new GetCollection(
-            uriTemplate: '/recipe/{id}/comments',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: Recipe::class,
-                )
-            ]
-        )
     ],
     normalizationContext: [
         'groups' => ['comment:read']
