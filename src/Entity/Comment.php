@@ -71,21 +71,21 @@ class Comment
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['comment:read', 'comment:create', 'comment:update'])]
+    #[Groups(['comment:read', 'comment:create', 'comment:update', 'recipe:read', 'user:read'])]
     private ?string $message = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:create', 'comment:read'])]
+    #[Groups(['comment:create', 'comment:read', 'user:read'])]
     private ?Recipe $recipe = null;
 
     #[ApiProperty(writable: false)]
     #[ORM\ManyToOne(inversedBy: 'comments', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'recipe:read'])]
     private ?User $author = null;
 
-    #[Groups(['comment:read'])]
+    #[Groups(['comment:read', 'recipe:read', 'user:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
