@@ -59,7 +59,7 @@ class Favorite
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['favorite:read'])]
+    #[Groups(['favorite:read', 'recipe:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
