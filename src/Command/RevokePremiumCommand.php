@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Repository\UserRepository;
-use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -13,11 +12,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'PromoteAdminCommand',
-    description: 'Promotes a user to admin',
+    name: 'RevokePremiumCommand',
+    description: 'Revokes the premium status of a user',
 )]
-class PromoteAdminCommand extends Command
+class RevokePremiumCommand extends Command
 {
+
     public function __construct(
         private UserRepository $userRepository,
         private EntityManagerInterface $entityManagerInterface
@@ -39,10 +39,10 @@ class PromoteAdminCommand extends Command
             $io->error('User not found');
             return Command::FAILURE;
         }
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setPremium(false);
         $this->entityManagerInterface->persist($user);
         $this->entityManagerInterface->flush();
-        $io->success('User is now admin');
+        $io->success('User is not premium anymore');
         return Command::SUCCESS;
     }
 }
