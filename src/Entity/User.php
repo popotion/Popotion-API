@@ -34,8 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: UserProcessor::class,
             denormalizationContext: [
                 'groups' => ['user:update']
-            ],
-            security: 'is_granted(\'' . UserVoter::EDIT . '\', object)'
+            ]
         ),
         new Post(
             processor: UserProcessor::class,
@@ -56,13 +55,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups(['user:read', 'recipe:read'])]
+    #[Groups(['user:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups(['user:read', 'user:update', 'user:create', 'recipe:read'])]
+    #[Groups(['user:read', 'user:create', 'recipe:read'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères')]
@@ -86,10 +85,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex(pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,30}$/', message: 'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre.', groups: ['user:create'])]
     private ?string $plainPassword = null;
 
-    #[UserPassword(message: 'Le mot de passe actuel est incorrect.', groups: ['user:update'])]
+    #[Groups(['user:update'])]
+    #[Assert\NotBlank(groups: ['user:update'])]
+    #[Assert\NotNull(groups: ['user:update'])]
     private ?string $currentPlainPassword = null;
 
-    #[Groups(['user:read', 'user:update', 'recipe:read'])]
+    #[Groups(['user:read', 'user:update'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $status = null;
 
@@ -97,7 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateOfBirth = null;
 
-    #[Groups(['user:read', 'user:update', 'user:create', 'recipe:read'])]
+    #[Groups(['user:read', 'user:update', 'user:create'])]
     #[Assert\NotBlank(groups: ['user:create'])]
     #[Assert\NotNull(groups: ['user:create'])]
     #[Assert\Email(message: 'L\'adresse mail n\'est pas valide.', groups: ['user:create', 'user:update'])]
