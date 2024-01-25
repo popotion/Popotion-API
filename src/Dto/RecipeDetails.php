@@ -25,7 +25,7 @@ class RecipeDetails
     {
         return [
             "Difficulté: " . $this->difficulty . "/5",
-            "Temps de préparation: " . $this->preparationTime . "min",
+            "Temps de préparation: " . $this->preparationTime . " min",
             "Pour: " . $this->nbPersons . " personnes"
         ];
     }
