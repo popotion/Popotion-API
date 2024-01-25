@@ -110,7 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $premium = false;
 
     #[Groups(['user:read'])]
-    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Recipe::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Recipe::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $recipes;
 
     #[Groups(['user:read'])]
