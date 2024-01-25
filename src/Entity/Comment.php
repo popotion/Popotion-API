@@ -57,7 +57,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 )
             ]
         )
-    ]
+    ],
+    normalizationContext: [
+        'groups' => ['comment:read']
+    ],
 )]
 class Comment
 {
@@ -72,12 +75,13 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['comment:read', 'comment:create'])]
+    #[Groups(['comment:create'])]
     private ?Recipe $recipe = null;
 
     #[ApiProperty(writable: false)]
     #[ORM\ManyToOne(inversedBy: 'comments', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read'])]
     private ?User $author = null;
 
     public function getId(): ?int
