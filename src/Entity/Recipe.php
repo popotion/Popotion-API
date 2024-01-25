@@ -118,7 +118,7 @@ class Recipe
     #[ORM\ManyToOne(inversedBy: 'recipes', fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[ApiProperty(writable: false)]
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'comment:read'])]
     private ?User $author = null;
 
     /**
