@@ -5,9 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\CommentRepository;
@@ -21,7 +18,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
         new Delete(
             security: 'is_granted(\'' . CommentVoter::DELETE . '\', object)'
         ),
@@ -38,26 +34,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'groups' => ['comment:update']
             ]
         ),
-        // Tous les commentaires d'un Utilisateur //
-        new GetCollection(
-            uriTemplate: '/user/{id}/comments',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: User::class,
-                )
-            ]
-        ),
-        // Tous les commentaires lié à une Recette //
-        new GetCollection(
-            uriTemplate: '/recipe/{id}/comments',
-            uriVariables: [
-                'id' => new Link(
-                    fromProperty: 'comments',
-                    fromClass: Recipe::class,
-                )
-            ]
-        )
     ],
     normalizationContext: [
         'groups' => ['comment:read']

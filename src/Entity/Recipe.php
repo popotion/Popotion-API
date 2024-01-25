@@ -89,7 +89,7 @@ class Recipe
     #[Assert\NotBlank(groups: ['recipe:create'])]
     #[Assert\Length(min: 3, max: 40, minMessage: 'Il faut au moins 3 caractères', maxMessage: 'Il faut au plus 40 caractères', groups: ['recipe:create'])]
     #[ORM\Column(length: 255)]
-    #[Groups(['recipe:read', 'recipe:create', 'recipe:update', 'user:read'])]
+    #[Groups(['recipe:read', 'recipe:create', 'recipe:update', 'user:read', 'category:read'])]
     private ?string $title = null;
 
     #[Assert\NotNull(groups: ['recipe:create'])]
@@ -422,15 +422,25 @@ class Recipe
         return $ingredients;
     }
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'category:read'])]
     public function getNbComments(): int
     {
         return $this->comments->count();
     }
 
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'category:read'])]
     public function getNbFavorites(): int
     {
         return $this->favorites->count();
+    }
+
+    #[Groups(['category:read'])]
+    public function getRecipeCategories(): array
+    {
+        $categories = [];
+        foreach ($this->categories as $category) {
+            $categories[] = $category->getName();
+        }
+        return $categories;
     }
 }
