@@ -85,6 +85,7 @@ class Comment
     #[Groups(['comment:read'])]
     private ?User $author = null;
 
+    #[Groups(['comment:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
@@ -140,5 +141,11 @@ class Comment
         $this->datePublication = $datePublication;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function prePersistDatePublication(): void
+    {
+        $this->datePublication = new \DateTime();
     }
 }
