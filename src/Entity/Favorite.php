@@ -2,20 +2,31 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\FavoriteRepository;
+use App\State\FavoriteProcessor;
+use App\Security\Voter\FavoriteVoter;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
 #[ApiResource(
     operations: [
-        new Delete(),
-        new Post(),
+        new Delete(
+            security: 'is_granted(\'' . FavoriteVoter::DELETE . '\', object)'
+        ),
+        new Post(
+            processor: FavoriteProcessor::class,
+            security: 'is_granted(\'' . FavoriteVoter::CREATE . '\', object)',
+            denormalizationContext: [
+                'groups' => ['favorite:create']
+            ]
+        ),
         // Tous les Favoris d'un Utilisateur) //
         new GetCollection(
             uriTemplate: '/user/{id}/favoris',
@@ -24,7 +35,8 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'comments',
                     fromClass: User::class,
                 )
-            ]),
+            ]
+        ),
         // Tous les Favoris d'une Recette) //
         new GetCollection(
             uriTemplate: '/recipe/{id}/favoris',
@@ -33,8 +45,12 @@ use Doctrine\ORM\Mapping as ORM;
                     fromProperty: 'comments',
                     fromClass: Recipe::class,
                 )
-            ]),
+            ]
+        ),
     ],
+    normalizationContext: [
+        'groups' => ['favorite:read']
+    ]
 )]
 class Favorite
 {
@@ -43,10 +59,13 @@ class Favorite
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['favorite:read'])]
+    #[ApiProperty(writable: false)]
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[Groups(['favorite:create', 'favorite:read'])]
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
