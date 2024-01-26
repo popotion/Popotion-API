@@ -61,9 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[Groups(['user:read', 'user:create', 'recipe:read', 'comment:read'])]
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères')]
+    #[Assert\NotBlank(groups: ['user:create'])]
+    #[Assert\NotNull(groups: ['user:create'])]
+    #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères', groups: ['user:create'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $login = null;
 
@@ -94,6 +94,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $status = null;
 
     #[Groups(['user:update', 'user:create'])]
+    #[Assert\NotBlank(groups: ['user:create'])]
+    #[Assert\NotNull(groups: ['user:create'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateOfBirth = null;
 
