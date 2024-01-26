@@ -11,6 +11,7 @@ use App\State\FavoriteProcessor;
 use App\Security\Voter\FavoriteVoter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
 #[ApiResource(
@@ -46,6 +47,8 @@ class Favorite
     #[Groups(['favorite:create', 'favorite:read', 'user:read'])]
     #[ORM\ManyToOne(inversedBy: 'favorites')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "La recette ne peut pas être vide")]
+    #[Assert\NotNull(message: "La recette ne peut pas être null")]
     private ?Recipe $recipe = null;
 
     public function getId(): ?int
