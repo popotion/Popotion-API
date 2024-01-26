@@ -6,6 +6,9 @@
 parameters:
   premium_price: "50"
   stripe_api_key: "%env(STRIPE_API_KEY)%"
+  stripe_webhook_key: "%env(STRIPE_WEBHOOK_KEY)%"
+  stripe_success_url: "%env(STRIPE_SUCCESS_URL)%"
+  stripe_cancel_url: "%env(STRIPE_CANCEL_URL)%"
 
 services:
   # default configuration for services in *this* file
@@ -21,6 +24,9 @@ services:
       - "../src/DependencyInjection/"
       - "../src/Entity/"
       - "../src/Kernel.php"
+
+  App\Service\PaymentHandler: ~
+  App\Service\PaymentHandlerInterface: '@App\Service\PaymentHandler'
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
