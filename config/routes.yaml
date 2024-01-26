@@ -10,6 +10,8 @@ auth:
 
 api_refresh_token:
   path: /api/token/refresh
+  methods: [POST]
 
 api_token_invalidate:
   path: /api/token/invalidate
+  methods: [POST]

@@ -16,9 +16,9 @@ security:
     main:
       entry_point: jwt
       refresh_jwt:
-        check_path: /api/token/refresh
+        check_path: api_refresh_token
       logout:
-        path: /api/logout
+        path: api_token_invalidate
       stateless: true
       lazy: true
       provider: app_user_provider
