@@ -166,6 +166,14 @@ class Recipe
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
 
+    #[Groups(['recipe:read', 'recipe:update', 'category:read', 'user:read'])]
+    #[ORM\Column(length: 64)]
+    #[Assert\Regex(pattern: '/\.(jpg|jpeg|png)$/i', message: 'Le nom du fichier de l\'image doit être au format JPG, JPEG ou PNG.', groups: ['recipe:create', 'recipe:update'])]
+    #[Assert\Length(max: 64, maxMessage: 'Le nom du fichier de l\'image doit faire au plus 64 caractères.', groups: ['recipe:create', 'recipe:update'])]
+    #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
+    #[Assert\NotBlank(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
+    private ?string $imageName = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -443,5 +451,17 @@ class Recipe
             $categories[] = $category->getName();
         }
         return $categories;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(string $imageName): static
+    {
+        $this->imageName = $imageName;
+
+        return $this;
     }
 }
