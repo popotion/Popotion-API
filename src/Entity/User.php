@@ -123,6 +123,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $favorites;
 
+    #[Groups(['user:read', 'user:update'])]
+    #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Regex(pattern: '/\.(jpg|jpeg|png)$/i', message: 'Le nom du fichier de l\'image doit être au format JPG, JPEG ou PNG.', groups: ['user:update'])]
+    #[Assert\Length(max: 64, maxMessage: 'Le nom du fichier de l\'image doit faire moins de 64 caractères.', groups: ['user:update'])]
+    private ?string $coverImageName = null;
+
     public function __construct()
     {
         $this->recipes = new ArrayCollection();
@@ -358,6 +364,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCurrentPlainPassword(string $currentPlainPassword): static
     {
         $this->currentPlainPassword = $currentPlainPassword;
+
+        return $this;
+    }
+
+    public function getCoverImageName(): ?string
+    {
+        return $this->coverImageName;
+    }
+
+    public function setCoverImageName(?string $coverImageName): static
+    {
+        $this->coverImageName = $coverImageName;
 
         return $this;
     }
