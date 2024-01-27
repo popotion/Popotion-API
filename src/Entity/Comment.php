@@ -39,6 +39,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: [
         'groups' => ['comment:read']
     ],
+    order: ['datePublication' => 'DESC']
 )]
 class Comment
 {
