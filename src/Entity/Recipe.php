@@ -82,7 +82,7 @@ class Recipe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'user:read', 'category:read'])]
     private ?int $id = null;
 
     #[Assert\NotNull(groups: ['recipe:create'])]
