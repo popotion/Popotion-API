@@ -21,7 +21,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(),
         new Post(),
         new GetCollection(),
-        // TODO Toutes les Ingrédients d'une Recette) 
     ]
 )]
 class Ingredient
