@@ -46,6 +46,8 @@ class RecipeVoter extends Voter
             case self::READ:
                 if ($subject->containsAlcohol() && !$user->isUnder18())
                     return true;
+                else if (!$subject->containsAlcohol())
+                    return true;
                 break;
         }
 
