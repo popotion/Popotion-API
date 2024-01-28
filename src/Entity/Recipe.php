@@ -99,9 +99,10 @@ class Recipe
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[Assert\Valid]
     #[ApiProperty(writable: true, readable: false)]
     #[Groups(['recipe:create', 'recipe:update'])]
+    #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner les détails de la recette')]
+    #[Assert\Valid(groups: ['recipe:create'])]
     private ?RecipeDetails $recipeDetails;
 
     #[Groups(['recipe:read'])]
@@ -109,8 +110,8 @@ class Recipe
     #[ORM\Column]
     private array $details = [];
 
-    #[Assert\NotNull(groups: ['recipe:create'])]
-    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner les étapes de préparation')]
+    #[Assert\NotBlank(groups: ['recipe:create'], message: 'Vous devez renseigner les étapes de préparation')]
     #[ORM\Column]
     #[Groups(['recipe:read', 'recipe:create', 'recipe:update'])]
     private array $preparation = [];
@@ -125,8 +126,8 @@ class Recipe
      * @var string[]
      */
     #[ApiProperty(writable: true, readable: false)]
-    #[Assert\NotNull(groups: ['recipe:create'])]
-    #[Assert\NotBlank(groups: ['recipe:create'])]
+    #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner au moins une catégorie')]
+    #[Assert\NotBlank(groups: ['recipe:create'], message: 'Vous devez renseigner au moins une catégorie')]
     #[Assert\Count(min: 1, minMessage: 'Il faut au moins une catégorie', groups: ['recipe:create'])]
     #[Assert\Count(max: 1, maxMessage: 'Il faut au plus 1 catégorie. Passez premium pour ajouter 3 catégories !', groups: ['recipe:create:normal', 'recipe:update:normal'])]
     #[Assert\Count(max: 3, maxMessage: 'Il faut au plus 3 catégories', groups: ['recipe:create:premium', 'recipe:update:premium'])]
@@ -164,6 +165,14 @@ class Recipe
     #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
+
+    #[Groups(['recipe:read', 'recipe:update', 'category:read', 'user:read'])]
+    #[ORM\Column(length: 64)]
+    #[Assert\Regex(pattern: '/\.(jpg|jpeg|png)$/i', message: 'Le nom du fichier de l\'image doit être au format JPG, JPEG ou PNG.', groups: ['recipe:create', 'recipe:update'])]
+    #[Assert\Length(max: 64, maxMessage: 'Le nom du fichier de l\'image doit faire au plus 64 caractères.', groups: ['recipe:create', 'recipe:update'])]
+    #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
+    #[Assert\NotBlank(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
+    private ?string $imageName = null;
 
     public function __construct()
     {
@@ -442,5 +451,17 @@ class Recipe
             $categories[] = $category->getName();
         }
         return $categories;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(string $imageName): static
+    {
+        $this->imageName = $imageName;
+
+        return $this;
     }
 }

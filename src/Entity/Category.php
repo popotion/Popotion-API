@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -54,6 +55,9 @@ class Category
 
     #[ORM\Column(length: 255)]
     #[Groups(['recipe:read', 'user:read', 'category:read'])]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
+    #[Assert\NotNull(message: "Le nom ne peut pas être null")]
+    #[Assert\Length(min: 3, max: 55, minMessage: "Le nom doit contenir au moins 3 caractères", maxMessage: "Le nom ne peut pas contenir plus de 55 caractères")]
     private ?string $name = null;
 
     #[Groups(['category:read'])]

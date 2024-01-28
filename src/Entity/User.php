@@ -61,9 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[Groups(['user:read', 'user:create', 'recipe:read', 'comment:read'])]
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères')]
+    #[Assert\NotBlank(groups: ['user:create'])]
+    #[Assert\NotNull(groups: ['user:create'])]
+    #[Assert\Length(min: 4, max: 200, minMessage: 'Il faut au moins 4 caractères', maxMessage: 'Il faut moins de 200 caractères', groups: ['user:create'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $login = null;
 
@@ -94,6 +94,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $status = null;
 
     #[Groups(['user:update', 'user:create'])]
+    #[Assert\NotBlank(groups: ['user:create'])]
+    #[Assert\NotNull(groups: ['user:create'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateOfBirth = null;
 
@@ -120,6 +122,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read'])]
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class, orphanRemoval: true, fetch: 'EAGER')]
     private Collection $favorites;
+
+    #[Groups(['user:read', 'user:update'])]
+    #[ORM\Column(length: 64, nullable: true)]
+    #[Assert\Regex(pattern: '/\.(jpg|jpeg|png)$/i', message: 'Le nom du fichier de l\'image doit être au format JPG, JPEG ou PNG.', groups: ['user:update'])]
+    #[Assert\Length(max: 64, maxMessage: 'Le nom du fichier de l\'image doit faire moins de 64 caractères.', groups: ['user:update'])]
+    private ?string $coverImageName = null;
 
     public function __construct()
     {
@@ -356,6 +364,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCurrentPlainPassword(string $currentPlainPassword): static
     {
         $this->currentPlainPassword = $currentPlainPassword;
+
+        return $this;
+    }
+
+    public function getCoverImageName(): ?string
+    {
+        return $this->coverImageName;
+    }
+
+    public function setCoverImageName(?string $coverImageName): static
+    {
+        $this->coverImageName = $coverImageName;
 
         return $this;
     }

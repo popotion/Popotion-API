@@ -13,6 +13,7 @@ use App\Security\Voter\CommentVoter;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
@@ -38,6 +39,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: [
         'groups' => ['comment:read']
     ],
+    order: ['datePublication' => 'DESC']
 )]
 class Comment
 {
@@ -48,11 +50,16 @@ class Comment
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['comment:read', 'comment:create', 'comment:update', 'recipe:read', 'user:read'])]
+    #[Assert\NotBlank(message: "Le message ne peut pas être vide")]
+    #[Assert\NotNull(message: "Le message ne peut pas être null")]
+    #[Assert\Length(min: 3, max: 255, minMessage: "Le message doit contenir au moins 3 caractères", maxMessage: "Le message doit contenir au maximum 255 caractères")]
     private ?string $message = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['comment:create', 'comment:read', 'user:read'])]
+    #[Assert\NotBlank(message: "La recette ne peut pas être vide")]
+    #[Assert\NotNull(message: "La recette ne peut pas être null")]
     private ?Recipe $recipe = null;
 
     #[ApiProperty(writable: false)]

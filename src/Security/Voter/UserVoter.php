@@ -30,7 +30,7 @@ class UserVoter extends Voter
                     return true;
                 break;
             case self::DELETE:
-                if ($subject == $user || in_array('ROLE_ADMIN', $user->getRoles()))
+                if (($subject == $user) || (in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_ADMIN', $subject->getRoles())))
                     return true;
                 break;
         }

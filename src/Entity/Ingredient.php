@@ -2,17 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\IngredientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
 #[ApiResource(
@@ -32,8 +32,12 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
+    #[Assert\NotNull(message: "Le nom ne peut pas être null")]
+    #[Assert\Length(min: 3, max: 40, minMessage: "Le nom doit contenir au moins 3 caractères", maxMessage: "Le nom ne peut pas contenir plus de 40 caractères")]
     private ?string $name = null;
 
+    #[ApiProperty(writable: false)]
     #[ORM\OneToMany(mappedBy: 'ingredient', targetEntity: Composition::class, orphanRemoval: true)]
     private Collection $compositions;
 
