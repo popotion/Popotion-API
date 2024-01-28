@@ -93,7 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $status = null;
 
-    #[Groups(['user:update', 'user:create'])]
+    #[Groups(['user:create'])]
     #[Assert\NotBlank(groups: ['user:create'])]
     #[Assert\NotNull(groups: ['user:create'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
