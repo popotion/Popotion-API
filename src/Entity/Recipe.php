@@ -28,7 +28,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
+        new Get(
+            security: 'is_granted(\'' . RecipeVoter::READ . '\', object)'
+        ),
         new Patch(
             processor: RecipeProcessor::class,
             validationContext: [
@@ -70,7 +72,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                 )
             ]
         ),
-        // TODO Toutes les Recettes ou sont contenues un Ingrédient)
+        // Toutes les Recettes ou sont contenues la composition qui contient un ingrédient) //
+        new GetCollection(
+            uriTemplate: '/ingredients/{id}/recipes',
+            name: 'get_recipes_by_ingredient',
+            controller: 'App\Controller\IngredientController'
+        )
     ],
     normalizationContext: [
         'groups' => ['recipe:read']
@@ -173,6 +180,10 @@ class Recipe
     #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
     #[Assert\NotBlank(groups: ['recipe:create'], message: 'Vous devez renseigner une image')]
     private ?string $imageName = null;
+
+    #[ApiProperty(writable: false, readable: false)]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private ?bool $containsAlcohol = false;
 
     public function __construct()
     {
@@ -461,6 +472,18 @@ class Recipe
     public function setImageName(string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function containsAlcohol(): bool
+    {
+        return $this->containsAlcohol;
+    }
+
+    public function setContainsAlcohol(bool $containsAlcohol): static
+    {
+        $this->containsAlcohol = $containsAlcohol;
 
         return $this;
     }

@@ -36,6 +36,8 @@ class RecipeProcessor implements ProcessorInterface
 
         if ($data->getRecipeDetails() !== null) $this->setRecipeDetails($data, $data->getRecipeDetails());
 
+        $this->setContainsAlcohol($data, $data->getCategoryNames(), $data->getCompositionsData());
+
         $this->persistProcessor->process($data, $operation, $uriVariables, $context);
     }
 
@@ -80,5 +82,24 @@ class RecipeProcessor implements ProcessorInterface
     public function setRecipeDetails(Recipe $recipe, RecipeDetails $recipeDetails): void
     {
         $recipe->setDetails($recipeDetails->toArray());
+    }
+
+    public function containsAlcohol(Recipe $recipe, array $categoryNames, array $compositionsData): bool
+    {
+        $res = false;
+        foreach ($categoryNames as $categoryName)
+            if (strtolower($categoryName) === 'alcool') $res = true;
+
+        $ingredientsWithAlcohol = ['absinthe', 'amaretto', 'aquavit', 'bailey\'s', 'bière', 'calvados', 'campari', 'champagne', 'chartreuse', 'cidre', 'cognac', 'cointreau', 'curacao', 'gin', 'jagermeister', 'kirsh', 'limoncello', 'liqueur', 'malibu', 'manzana', 'marc', 'martini', 'metaxa', 'ouzo', 'pastis', 'picon', 'pina colada', 'porto', 'raki', 'rhum', 'sake', 'sambuca', 'sangria', 'schnaps', 'sherry', 'southern comfort', 'tequila', 'triple sec', 'vermouth', 'vin', 'vodka', 'whisky', 'xeres', 'zubrowka'];
+
+        foreach ($compositionsData as $compositionData)
+            if (in_array(strtolower($compositionData->ingredientName), $ingredientsWithAlcohol)) $res = true;
+
+        return $res;
+    }
+
+    public function setContainsAlcohol(Recipe $recipe, array $categoryNames, array $compositionsData): void
+    {
+        $recipe->setContainsAlcohol($this->containsAlcohol($recipe, $categoryNames, $compositionsData));
     }
 }

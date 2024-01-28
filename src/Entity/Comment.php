@@ -46,6 +46,7 @@ class Comment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['comment:read', 'recipe:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
