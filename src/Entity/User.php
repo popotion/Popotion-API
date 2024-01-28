@@ -379,4 +379,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function isUnder18(): bool
+    {
+        $now = new \DateTime();
+        $interval = $now->diff($this->dateOfBirth);
+
+        return $interval->y < 18;
+    }
 }
