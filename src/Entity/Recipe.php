@@ -70,7 +70,12 @@ use Symfony\Component\Validator\Constraints as Assert;
                 )
             ]
         ),
-        // TODO Toutes les Recettes ou sont contenues un Ingrédient)
+        // Toutes les Recettes ou sont contenues la composition qui contient un ingrédient) //
+        new GetCollection(
+            uriTemplate: '/ingredients/{id}/recipes',
+            name: 'get_recipes_by_ingredient',
+            controller: 'App\Controller\IngredientController'
+        )
     ],
     normalizationContext: [
         'groups' => ['recipe:read']
