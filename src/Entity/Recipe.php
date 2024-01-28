@@ -102,7 +102,7 @@ class Recipe
     #[ApiProperty(writable: true, readable: false)]
     #[Groups(['recipe:create', 'recipe:update'])]
     #[Assert\NotNull(groups: ['recipe:create'], message: 'Vous devez renseigner les détails de la recette')]
-    #[Assert\Valid(groups: ['recipe:create'])]
+    #[Assert\Valid(groups: ['recipe:create', 'recipe:update'])]
     private ?RecipeDetails $recipeDetails;
 
     #[Groups(['recipe:read'])]
@@ -153,7 +153,7 @@ class Recipe
      * @var CompositionData[]
      */
     #[ApiProperty(writable: true, readable: false)]
-    #[Assert\Valid]
+    #[Assert\Valid(groups: ['recipe:create', 'recipe:update'])]
     #[Groups(['recipe:create', 'recipe:update'])]
     private array $compositionsData = [];
 
