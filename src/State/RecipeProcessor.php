@@ -49,22 +49,45 @@ class RecipeProcessor implements ProcessorInterface
 
     public function createIngredientsAndSetCompositions(Recipe $recipe, array $compositionsData): void
     {
+        $updatedCompositions = [];
+
         foreach ($compositionsData as $compositionData) {
             $ingredient = $this->ingredientRepository->findOneByName($compositionData->ingredientName);
+
             if (!$ingredient) {
                 $ingredient = new Ingredient();
                 $ingredient->setName($compositionData->ingredientName);
                 $this->ingredientRepository->save($ingredient);
             }
 
-            $composition = new Composition();
-            $composition->setIngredient($ingredient);
-            $composition->setQuantity($compositionData->quantity);
-            $composition->setUnit($compositionData->unit);
-            $composition->setRecipe($recipe);
-            $recipe->addComposition($composition);
+            $found = false;
+            foreach ($recipe->getCompositions() as $composition) {
+                if ($composition->getIngredient() === $ingredient) {
+                    $composition->setQuantity($compositionData->quantity);
+                    $composition->setUnit($compositionData->unit);
+                    $found = true;
+                    $updatedCompositions[] = $composition;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $composition = new Composition();
+                $composition->setIngredient($ingredient);
+                $composition->setQuantity($compositionData->quantity);
+                $composition->setUnit($compositionData->unit);
+                $composition->setRecipe($recipe);
+                $recipe->addComposition($composition);
+                $updatedCompositions[] = $composition;
+            }
         }
+
+        foreach ($recipe->getCompositions() as $composition)
+            if (!in_array($composition, $updatedCompositions))
+                $recipe->removeComposition($composition);
     }
+
+
 
     public function createCategories(array $categoryNames, Recipe $recipe): void
     {
