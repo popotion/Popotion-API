@@ -168,7 +168,7 @@ class Recipe
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Composition::class, orphanRemoval: true, cascade: ['persist'], fetch: 'EAGER')]
     private Collection $compositions;
 
-    #[Groups(['recipe:read'])]
+    #[Groups(['recipe:read', 'category:read'])]
     #[ApiProperty(writable: false)]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datePublication = null;
