@@ -36,6 +36,7 @@ class Favorite
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['favorite:read', 'user:read'])]
     private ?int $id = null;
 
     #[Groups(['favorite:read', 'recipe:read'])]
